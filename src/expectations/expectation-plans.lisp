@@ -3,6 +3,8 @@
 ;; Move Jido and validate expectations
 (def-top-level-plan expectation-test-1()
   (start-statevar-update)
+  ;; Note: start-statevar-update is asynchronous! generate-expectations should somehow check if human and/or
+  ;; robot is already percieved and when last detection has been!
   (generate-expectations)
 
    (with-designators 

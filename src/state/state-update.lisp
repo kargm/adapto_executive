@@ -63,6 +63,7 @@
 ;;; - am Anfang einmal Ground Truth topic abhören (dann unsubscriben), dabei statevars für Objekte erzeugen
 ;;; - dann Topic mit kamera-gefilterten Daten zum Update verwenden
 
+;; topics stores arguments for roslisp::subscribe function (topic, callback-funtion). 
 (let ( (topics `(("/Jido/Pose_sensor" "nav_msgs/Odometry" ,#'store-position-data)
                  ("/Human/Pose" "geometry_msgs/PoseStamped" ,#'store-human-position-data)
                  ("/Jido/Object_tracker" "std_msgs/String" ,#'store-object-data)))
