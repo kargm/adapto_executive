@@ -1,0 +1,1 @@
+../src/test/integration-test.asd

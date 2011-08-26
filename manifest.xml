@@ -1,0 +1,28 @@
+<package>
+  <description brief="adapto_executive">
+
+     adapto_executive
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="cram_language"/>
+  <depend package="cram_execution_trace"/>
+  <depend package="cram_reasoning"/>
+  <depend package="cram_utilities"/>
+  <depend package="cram_math"/>
+  <depend package="roll"/>
+  <depend package="designators_ros"/>
+  <!--<depend package="adapto_designator"/>-->
+  <depend package="cram_roslisp_common"/>
+  <depend package="cram_plan_library"/>
+  <depend package="cram_plan_knowledge"/>
+  <depend package="location_costmap"/>
+  <depend package="cram_plan_actionserver"/>
+  <depend package="fake_process_modules"/>
+  <depend package="morse_jido_pm"/>
+</package>
+
+
