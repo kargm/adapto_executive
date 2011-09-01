@@ -2,6 +2,8 @@
 
 ;; Move Jido and validate expectations
 (def-top-level-plan expectation-test-1()
+  (cram-execution-trace:enable-fluent-tracing)
+  ;; (cet:enable-auto-tracing)
   (start-statevar-update)
   ;; Note: start-statevar-update is asynchronous! generate-expectations should somehow check if human and/or
   ;; robot is already percieved and when last detection has been!
@@ -16,7 +18,9 @@
              (par
                (maybe-run-process-modules)
                (start-expectation-validation)
-               (cram-process-modules:pm-execute :navigation loc-desig))))
+               (achieve `(loc robot ,loc-desig))
+               ;; (cram-process-modules:pm-execute :navigation loc-desig)
+               )))
 
 (def-top-level-plan movable-test-1()
   (start-statevar-update)

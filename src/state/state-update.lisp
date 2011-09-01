@@ -20,12 +20,14 @@
 (defun store-position-data (data)
   (store-pose (pose (value (getgv :robot 'jido)))
               (geometry_msgs-msg:pose (nav_msgs-msg:pose data))
-              (std_msgs-msg:stamp (nav_msgs-msg:header data))))
+              (std_msgs-msg:stamp (nav_msgs-msg:header data)))
+  (pulse (getgv :robot 'jido)))
 
 (defun store-human-position-data (data)
   (store-pose (pose (value (getgv :human 'louis)))
               (geometry_msgs-msg:pose data)
-              (std_msgs-msg:stamp (geometry_msgs-msg:header data))))
+              (std_msgs-msg:stamp (geometry_msgs-msg:header data)))
+  (pulse (getgv :human 'louis)))
 
 ;; Creates one object from object data
 (defun create-object (name type x y z qx qy qz qw )       
@@ -54,7 +56,8 @@
             (setf (tf:y (tf:orientation target-pose)) qy)
             (setf (tf:z (tf:orientation target-pose)) qz)
             (setf (tf:w (tf:orientation target-pose)) qw)
-            (setf (tf:stamp target-pose) (roslisp:ros-time)))
+            (setf (tf:stamp target-pose) (roslisp:ros-time))
+            (pulse (getgv :kitchen-object name)))
           (create-object name type x y z qx qy qz qw))))))
     
   
@@ -64,13 +67,14 @@
 ;;; - dann Topic mit kamera-gefilterten Daten zum Update verwenden
 
 ;; topics stores arguments for roslisp::subscribe function (topic, callback-funtion). 
-(let ( (topics `(("/Jido/Pose_sensor" "nav_msgs/Odometry" ,#'store-position-data)
-                 ("/Human/Pose" "geometry_msgs/PoseStamped" ,#'store-human-position-data)
-                 ("/Jido/Object_tracker" "std_msgs/String" ,#'store-object-data)))
+(let ( (topics `(("/Jido/Pose_sensor" "nav_msgs/Odometry" store-position-data)
+                 ("/Human/Pose" "geometry_msgs/PoseStamped" store-human-position-data)
+                 ("/Jido/Object_tracker" "std_msgs/String" store-object-data)))
        (subscribers '()) )
   (defun start-statevar-update ()
     (dolist (top topics)
-      (push (apply #'roslisp:subscribe top) subscribers))
+      (destructuring-bind (topic topic-type callback) top
+        (push (roslisp:subscribe topic topic-type (symbol-function callback)) subscribers)))
     (sleep 2))
 
   (defun stop-statevar-update ()

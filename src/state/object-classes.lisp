@@ -16,7 +16,7 @@
   ( (arm-base-joint :initarg :arm-base-joint :accessor arm-base-joint) ))
 
 
-;; objects
+;; an entity is an object that is not an agent
 (defclass entity (thing) ())
 
 (defclass cube (entity cuboid) ())

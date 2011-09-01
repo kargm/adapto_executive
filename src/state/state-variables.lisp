@@ -17,7 +17,8 @@
                                 (tf:make-quaternion 0 0 0 1)) ; rotation/orientation
                         :width 0.71
                         :depth 0.66
-                        :height 1.6)))
+                        :height 1.6)
+               :max-tracing-freq 5))
 
 (addgv :human 'louis
   (make-fluent :name 'louis
@@ -26,6 +27,7 @@
                                 "map"
                                 0.0
                                 (tf:make-3d-vector 0 0 0)
-                                (tf:make-quaternion 0 0 0 1)))))
+                                (tf:make-quaternion 0 0 0 1)))
+               :max-tracing-freq 5))
 
 ;;; Objekte -> werden in state-update erzeugt
