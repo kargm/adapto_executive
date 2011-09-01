@@ -43,9 +43,9 @@
 ;; Updates Object data from list of objects. Objects have format: ( Name Description x y z qx qy qz qw ) (qx, qy, qz, qw refer to objects' rotation as qaternion )
 (defun store-object-data (data)
   (let ( (*package* (find-package :ad-exe)) )
-  (dolist (obj-data (read-from-string (std_msgs-msg:data data)))
-    (destructuring-bind (name type x y z qx qy qz qw) obj-data      
-      (if (isgv :kitchen-object name) 
+    (dolist (obj-data (read-from-string (std_msgs-msg:data data)))
+      (destructuring-bind (name type x y z qx qy qz qw) obj-data      
+        (if (isgv :kitchen-object name) 
           (let ( (target-pose (pose [getgv :kitchen-object name])) )
             (setf (tf:x (tf:origin target-pose)) x)
             (setf (tf:y (tf:origin target-pose)) y)

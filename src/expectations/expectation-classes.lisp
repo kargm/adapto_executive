@@ -12,7 +12,7 @@
 
 (defclass object-expectation (expectation)
   ((object :initarg :object :accessor object)
-   (flexible :initarg :movable :accessor flexible)))
+   (flexible :initarg :flexible :accessor flexible)))
 
 (defmethod validate-expectation (x) (error "[expectation-classes.lisp] - No validation-function defined for this type"))
 
@@ -22,6 +22,8 @@
     1
     0))
 
-;; Return 0 if object that is not flexible has moved, otherwise return 0  
-;; (defmethod validate-expectation ((exp object-expectation))
-;;   (if ))
+;; Return 0 if object that is not flexible has moved, otherwise return 1  
+(defmethod validate-expectation ((exp object-expectation))
+   (if (and (has-moved (object exp)) (not (flexible exp)))
+       0
+       1))
