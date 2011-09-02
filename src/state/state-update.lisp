@@ -47,21 +47,16 @@
   (let ( (*package* (find-package :ad-exe)) )
     (dolist (obj-data (read-from-string (std_msgs-msg:data data)))
       (destructuring-bind (name type x y z qx qy qz qw) obj-data      
-        (if (isgv :kitchen-object name) 
-          (let ( (target-pose (pose [getgv :kitchen-object name])) )
-            (setf (tf:x (tf:origin target-pose)) x)
-            (setf (tf:y (tf:origin target-pose)) y)
-            (setf (tf:z (tf:origin target-pose)) z)
-            (setf (tf:x (tf:orientation target-pose)) qx)
-            (setf (tf:y (tf:orientation target-pose)) qy)
-            (setf (tf:z (tf:orientation target-pose)) qz)
-            (setf (tf:w (tf:orientation target-pose)) qw)
-            (setf (tf:stamp target-pose) (roslisp:ros-time))
-            (pulse (getgv :kitchen-object name)))
-          (create-object name type x y z qx qy qz qw))))))
-    
-  
-
+        (cond  ((isgv :kitchen-object name)
+                (setf (pose (value (getgv :kitchen-object name)))
+                  (tf:make-pose-stamped
+                   "map"
+                   (roslisp:ros-time)
+                   (cl-transforms:make-3d-vector x y z)
+                   (cl-transforms:make-quaternion qx qy qz qw)))
+                (pulse (getgv :kitchen-object name)))
+               (t (create-object name type x y z qx qy qz qw)))))))
+        
 ;;; Objekte:
 ;;; - am Anfang einmal Ground Truth topic abhören (dann unsubscriben), dabei statevars für Objekte erzeugen
 ;;; - dann Topic mit kamera-gefilterten Daten zum Update verwenden
