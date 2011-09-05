@@ -1,33 +1,38 @@
 (in-package :ad-exe)
 
-(defun store-pose (target-pose source-pose stamp)
-  (setf (tf:x (tf:origin target-pose))
-        (geometry_msgs-msg:x (geometry_msgs-msg:position source-pose)))
-  (setf (tf:y (tf:origin target-pose))
-        (geometry_msgs-msg:y (geometry_msgs-msg:position source-pose)))
-  (setf (tf:z (tf:origin target-pose))
-        (geometry_msgs-msg:z (geometry_msgs-msg:position source-pose)))
-  (setf (tf:x (tf:orientation target-pose))
-        (geometry_msgs-msg:x (geometry_msgs-msg:orientation source-pose)))
-  (setf (tf:y (tf:orientation target-pose))
-        (geometry_msgs-msg:y (geometry_msgs-msg:orientation source-pose)))
-  (setf (tf:z (tf:orientation target-pose))
-        (geometry_msgs-msg:z (geometry_msgs-msg:orientation source-pose)))
-  (setf (tf:w (tf:orientation target-pose))
-        (geometry_msgs-msg:w (geometry_msgs-msg:orientation source-pose)))
-  (setf (tf:stamp target-pose) stamp))
-
-(defun store-position-data (data)
-  (store-pose (pose (value (getgv :robot 'jido)))
-              (geometry_msgs-msg:pose (nav_msgs-msg:pose data))
-              (std_msgs-msg:stamp (nav_msgs-msg:header data)))
-  (pulse (getgv :robot 'jido)))
-
+;; Update human position (map from nav_msgs/Odometry to PoseStamped)
 (defun store-human-position-data (data)
-  (store-pose (pose (value (getgv :human 'louis)))
-              (geometry_msgs-msg:pose data)
-              (std_msgs-msg:stamp (geometry_msgs-msg:header data)))
+  (setf (pose (value (getgv :human 'louis)))
+        (tf:make-pose-stamped
+         "map"
+         (roslisp:ros-time)
+         (cl-transforms:make-3d-vector
+          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose data)))
+          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose data)))
+          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose data))))
+         (cl-transforms:make-quaternion
+          (geometry_msgs-msg:x (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
+          (geometry_msgs-msg:y (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
+          (geometry_msgs-msg:z (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
+          (geometry_msgs-msg:w (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data))))))
   (pulse (getgv :human 'louis)))
+
+;; Update robot position (TODO: should also be possible shorter...)
+(defun store-position-data (data)
+  (setf (pose (value (getgv :robot 'jido)))
+        (tf:make-pose-stamped
+         "map"
+        (std_msgs-msg:stamp (nav_msgs-msg:header data))
+        (cl-transforms:make-3d-vector 
+         (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (nav_msgs-msg:pose data))))
+         (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (nav_msgs-msg:pose data))))
+         (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (nav_msgs-msg:pose data)))))
+        (cl-transforms:make-quaternion
+         (geometry_msgs-msg:x (geometry_msgs-msg:orientation (geometry_msgs-msg:pose (nav_msgs-msg:pose data))))
+         (geometry_msgs-msg:y (geometry_msgs-msg:orientation (geometry_msgs-msg:pose (nav_msgs-msg:pose data))))
+         (geometry_msgs-msg:z (geometry_msgs-msg:orientation (geometry_msgs-msg:pose (nav_msgs-msg:pose data))))
+         (geometry_msgs-msg:w (geometry_msgs-msg:orientation (geometry_msgs-msg:pose (nav_msgs-msg:pose data)))))))
+  (pulse (getgv :robot 'jido)))
 
 ;; Creates one object from object data
 (defun create-object (name type x y z qx qy qz qw )       
