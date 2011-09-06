@@ -34,7 +34,8 @@
                                       "map"                         ; frame-id
                                       (roslisp:ros-time)            ; stamp
                                       (tf:make-3d-vector x y z)     ; translation/origin
-                                      (tf:make-quaternion qx qy qz qw)))))) ; rotation/orientation
+                                      (tf:make-quaternion qx qy qz qw)))  ; rotation/orientation
+                      :max-tracing-freq 5))) ; do fluent tracing only with 5 Hz
 
 ;; Updates Object data from list of objects. Objects have format: ( Name Description x y z qx qy qz qw ) (qx, qy, qz, qw refer to objects' rotation as qaternion )
 (defun store-object-data (data)
