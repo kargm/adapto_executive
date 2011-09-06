@@ -1,29 +1,30 @@
 (in-package :ad-exe)
 
 ;; Here we define the instances of our expectations and put them into a global structure
+;; x,y and pose of location expectations are fluents since they are subject to change
 ;; For example here: An expectation about the human beeing no more than 6 meters away from Jido
 (defun generate-location-expectations ()
   (create-global-structure :expectations)
   (addgv :expectations 'louis-near-jido (make-instance 'position-expectation
-                                    :area (make-instance 'circle
+                                    :area (make-instance 'moving-circle
                                             :radius 5
-                                            :x (tf:x (tf:origin (pose [getgv :robot 'jido])))
-                                            :y (tf:y (tf:origin (pose [getgv :robot 'jido]))))
-                                    :pose (pose [getgv :human 'louis])))
-  
+                                            :x (fl-funcall #'(lambda (fl-x) (tf:x (tf:origin (pose fl-x)))) (getgv :robot 'jido))
+                                            :y (fl-funcall #'(lambda (fl-y) (tf:y (tf:origin (pose fl-y)))) (getgv :robot 'jido)))
+                                    :pose (fl-funcall #'pose (getgv :human 'louis))))
+
   (addgv :expectations 'louis-near-red-cube (make-instance 'position-expectation
-                                              :area (make-instance 'circle
+                                              :area (make-instance 'moving-circle
                                                       :radius 5
-                                                      :x (tf:x (tf:origin (pose [getgv :kitchen-object 'red_cube])))
-                                                      :y (tf:y (tf:origin (pose [getgv :kitchen-object 'red_cube]))))
-                                              :pose (pose [getgv :human 'louis])))
+                                                      :x (fl-funcall #'(lambda (fl-x) (tf:x (cl-transforms:origin (pose fl-x)))) (getgv :kitchen-object 'red_cube))
+                                                      :y (fl-funcall #'(lambda (fl-y) (tf:y (cl-transforms:origin (pose fl-y)))) (getgv :kitchen-object 'red_cube)))
+                                              :pose (fl-funcall #'pose (getgv :human 'louis))))
   
-  (addgv :expectations 'louis-near-red-chair (make-instance 'position-expectation
-                                              :area (make-instance 'circle
+  (addgv :expectations 'louis-near-desk (make-instance 'position-expectation
+                                              :area (make-instance 'moving-circle
                                                       :radius 5
-                                                      :x (tf:x (tf:origin (pose [getgv :kitchen-object 'red_chair_1])))
-                                                      :y (tf:y (tf:origin (pose [getgv :kitchen-object 'red_chair_1]))))
-                                              :pose (pose [getgv :human 'louis]))))
+                                                      :x (fl-funcall #'(lambda (fl-x) (tf:x (cl-transforms:origin (pose fl-x)))) (getgv :kitchen-object 'desk_2))
+                                                      :y (fl-funcall #'(lambda (fl-y) (tf:y (cl-transforms:origin (pose fl-y)))) (getgv :kitchen-object 'desk_2)))
+                                              :pose (fl-funcall #'pose (getgv :human 'louis)))))
 
 (defun generate-object-expectations ()
    (create-global-structure :expectations)
