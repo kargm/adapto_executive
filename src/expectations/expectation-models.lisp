@@ -10,12 +10,14 @@
                                             :x (tf:x (tf:origin (pose [getgv :robot 'jido])))
                                             :y (tf:y (tf:origin (pose [getgv :robot 'jido]))))
                                     :pose (pose [getgv :human 'louis])))
+  
   (addgv :expectations 'louis-near-red-cube (make-instance 'position-expectation
                                               :area (make-instance 'circle
                                                       :radius 5
                                                       :x (tf:x (tf:origin (pose [getgv :kitchen-object 'red_cube])))
                                                       :y (tf:y (tf:origin (pose [getgv :kitchen-object 'red_cube]))))
                                               :pose (pose [getgv :human 'louis])))
+  
   (addgv :expectations 'louis-near-red-chair (make-instance 'position-expectation
                                               :area (make-instance 'circle
                                                       :radius 5

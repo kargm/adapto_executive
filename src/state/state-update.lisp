@@ -3,21 +3,10 @@
 ;; Update human position (map from nav_msgs/Odometry to PoseStamped)
 (defun store-human-position-data (data)
   (setf (pose (value (getgv :human 'louis)))
-        (tf:make-pose-stamped
-         "map"
-         (roslisp:ros-time)
-         (cl-transforms:make-3d-vector
-          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose data)))
-          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose data)))
-          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose data))))
-         (cl-transforms:make-quaternion
-          (geometry_msgs-msg:x (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
-          (geometry_msgs-msg:y (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
-          (geometry_msgs-msg:z (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data)))
-          (geometry_msgs-msg:w (geometry_msgs-msg:orientation (geometry_msgs-msg:pose data))))))
+        (tf:msg->pose-stamped data))
   (pulse (getgv :human 'louis)))
 
-;; Update robot position (TODO: should also be possible shorter...)
+;; Update robot position (TODO: get position from TF instead of Sensor topic)
 (defun store-position-data (data)
   (setf (pose (value (getgv :robot 'jido)))
         (tf:make-pose-stamped
