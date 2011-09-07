@@ -10,10 +10,14 @@
                           #:name)
   (:import-from :cram-utilities
                 #:map-global-structure #:create-global-structure #:remove-global-structure #:clear-global-structure
-                #:addgv #:isgv #:getgv #:setgv #:remgv #:putgv)
+                #:addgv #:isgv #:getgv #:setgv #:remgv #:putgv #:var-value)
   (:import-from :cram-roslisp-common
                 #:startup-ros
                 #:shutdown-ros)
+  ;; cram execution trace
+  (:import-from :cram-reasoning
+               #:prolog)
+  
   (:desig-properties
    ;; adapto
    #:reach-location
