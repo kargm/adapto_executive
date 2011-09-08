@@ -19,10 +19,7 @@
 (defmethod has-moved ((object kitchen-object))
   (let ((has-moved-p
         (unless (null (last-detection object))
-          (format t "last-detection: ~s ~%" (cl-transforms:origin (last-detection object)))
-          (format t "pose: ~s ~%" (cl-transforms:origin [(pose object)]))
           (> (cl-transforms:v-dist (cl-transforms:origin [(pose object)]) (cl-transforms:origin (last-detection object)))
              0.1 ))))
     (setf (last-detection object) [(pose object)])
-    (format t "has-moved-p: ~s ~%" has-moved-p) 
     has-moved-p))

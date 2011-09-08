@@ -24,6 +24,8 @@
 
 ;; Return 0 if object that is not flexible has moved, otherwise return 1  
 (defmethod validate-expectation ((exp object-expectation))
-   (if (and (has-moved (object exp)) (not (flexible exp)))
-       0
-       1))
+   (cond
+     ((and (has-moved (object exp)) (not (flexible exp)))
+       (format t "An object moved unexpectedly...~%")
+       0)
+     (t 1)))
