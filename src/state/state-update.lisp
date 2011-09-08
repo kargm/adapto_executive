@@ -50,7 +50,8 @@
                    (cl-transforms:make-3d-vector x y z)
                    (cl-transforms:make-quaternion qx qy qz qw)))
                 (pulse (getgv :kitchen-object name)))
-               (t (create-object name type x y z qx qy qz qw)))))))
+               (t (create-object name type x y z qx qy qz qw)
+                 (pulse (getgv :kitchen-object name))))))))
         
 ;;; Objekte:
 ;;; - am Anfang einmal Ground Truth topic abhören (dann unsubscriben), dabei statevars für Objekte erzeugen

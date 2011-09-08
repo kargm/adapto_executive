@@ -30,7 +30,7 @@
    (create-global-structure :expectations)
    (addgv :expectations 'red-cube-static (make-instance 'object-expectation
                                            :object (make-instance 'kitchen-object
-                                                     :pose (pose [getgv :kitchen-object 'red_cube]))
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'red_cube)))
                                            :flexible NIL)))
 
 (defun clean-expectations ()
