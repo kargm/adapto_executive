@@ -14,12 +14,13 @@
   (let (( normalities (validate-expectations)) (average-normality 0))
     (setf average-normality (average normalities))
    (unless (null normalities)
-     (format t "Expectation-Validation: ~s ~%" normalities)
+     ;; (format t "Expectation-Validation: ~s ~%" normalities)
      (format t "Average-normality: ~s ~%" average-normality)
      (cond
-       ( (< average-normality 0.1) (format t "There MUST be something wrong!~%"))
-       ( (< average-normality 0.25) (format t "I think there IS something wrong...~%"))
-       ( (< average-normality 0.5) (format t "Hmmm there could be something wrong...~%")))
+       ( (< average-normality 0.1) (format t "There MUST be something wrong! (avg. normality: ~s)~%" average-normality))
+       ( (< average-normality 0.25) (format t "I think there IS something wrong... (avg. normality: ~s)~%" average-normality))
+       ( (< average-normality 0.75) (format t "Hmmm there could be something wrong.. (avg. normality: ~s).~%" average-normality))
+       ( (< average-normality 0.9) (format t "Something is not as expected... (avg. normality: ~s)~%" average-normality)))
      (sleep 2)
      (start-expectation-validation))))
     

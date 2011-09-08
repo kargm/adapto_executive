@@ -31,7 +31,33 @@
    (addgv :expectations 'red-cube-static (make-instance 'object-expectation
                                            :object (make-instance 'kitchen-object
                                                      :pose (fl-funcall #'pose (getgv :kitchen-object 'red_cube)))
-                                           :flexible NIL)))
+                                           :flexible NIL))
+   
+   (addgv :expectations 'cyan-cube-static (make-instance 'object-expectation
+                                           :object (make-instance 'kitchen-object
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'cyan_cube)))
+                                           :flexible NIL))
+
+   (addgv :expectations 'green-cube-static (make-instance 'object-expectation
+                                           :object (make-instance 'kitchen-object
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'green_cube)))
+                                           :flexible NIL))
+
+   (addgv :expectations 'pink-cube-static (make-instance 'object-expectation
+                                           :object (make-instance 'kitchen-object
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'pink_cube)))
+                                           :flexible NIL))
+   
+  (addgv :expectations 'yellow-cube-static (make-instance 'object-expectation
+                                           :object (make-instance 'kitchen-object
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'yellow_cube)))
+                                           :flexible NIL))
+  
+   (addgv :expectations 'purple-cube-static (make-instance 'object-expectation
+                                           :object (make-instance 'kitchen-object
+                                                     :pose (fl-funcall #'pose (getgv :kitchen-object 'purple_cube)))
+                                           :flexible NIL))
+   )
 
 (defun clean-expectations ()
   (clear-global-structure :expectations))
