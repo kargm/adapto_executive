@@ -18,6 +18,8 @@
    (y :initarg :y :accessor y)
    (radius :initarg :radius :accessor radius)))
 
+(defgeneric inside-area (area pose))
+
 (defmethod inside-area (area pose)
   (error "[area-classes.lisp] - No inside-area function defined for this kind of area"))
 

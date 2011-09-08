@@ -13,6 +13,7 @@
 (defclass object-expectation (expectation)
   ((object :initarg :object :accessor object)
    (flexible :initarg :flexible :accessor flexible)))
+(defgeneric validate-expectation (x))
 
 (defmethod validate-expectation (x) (error "[expectation-classes.lisp] - No validation-function defined for this type"))
 
