@@ -2,8 +2,21 @@
 
 ;; general things
 (defclass thing (geometrical-form)
-  ( (id :initarg :id :reader id) ))
+  ((id :initarg :id :reader id)
+   (last-detection :initarg :last-detection :initform NIL :accessor last-detection)))
 
+;; things can be checked if they have moved since their last detection
+
+(defgeneric has-moved (thing))
+
+;; Checks if object has moved since last detection. Returns T or NIL
+(defmethod has-moved (thing)
+  (let ((has-moved-p
+        (unless (null (last-detection thing))
+          (> (cl-transforms:v-dist (cl-transforms:origin [(pose thing)]) (cl-transforms:origin (last-detection thing)))
+             0.1 ))))
+    (setf (last-detection thing) [(pose thing)])
+    has-moved-p))
 
 ;; agents
 (defclass agent (thing) ())
