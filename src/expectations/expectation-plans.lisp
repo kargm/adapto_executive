@@ -56,6 +56,4 @@
              (par
                (maybe-run-process-modules)
                (start-navigation-watchdog)
-               (cram-process-modules:pm-execute :navigation loc-desig)
-               ;; Check status of navigation-pm
-               (format t "Status of Nav-PM: ~s~%" [cpm:pm-status :navigation]))))
+               (cram-process-modules:pm-execute :navigation loc-desig))))
