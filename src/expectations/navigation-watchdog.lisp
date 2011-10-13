@@ -4,30 +4,46 @@
 ;; Length of the array returns strange values...
 ;; TODO: Iterate through array and calculate lengths between waypoints
 (defun calculate-time (data)
+  (let ((distances-waypoints nil) (distance-air nil))
   (format t ".")
   (format t "Found path of length ~s~%" (length (nav_msgs-msg:poses data)))
-  ;; calculate distance btw. poses
 
-  (format t "loop: ~s~%"
-          (loop for i from 1 to (- 1 (length (nav_msgs-msg:poses data))) collect i))
-  
-  (format t "Distance: ~s~%" (cl-transforms:v-dist
-                              (cl-transforms::make-3d-vector
-                               (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
-                               (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
-                               (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0)))))
-                              (cl-transforms:make-3d-vector
-                               (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 2))))
-                               (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 2))))
-                               (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 2))))
-                               )
-                              ))
-  
-  ;; (format t "~s~%" (elt (nav_msgs-msg:poses data) 1))
-  (sleep 2)
+  ;; calculate distance btw. poses of the global plan
+  (setf distances-waypoints 
+          (loop for i from 1 to (- (length (nav_msgs-msg:poses data)) 1) collect
+               (cl-transforms:v-dist
+                (cl-transforms::make-3d-vector
+                 (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- i 1)))))
+                 (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- i 1)))))
+                 (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- i 1))))))
+                (cl-transforms:make-3d-vector
+                 (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) i))))
+                 (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) i))))
+                 (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) i))))
+                 )
+                )))
+
+  ;; calculate distance between start- and endpose of the plan
+  (setf distance-air
+        (cl-transforms:v-dist
+         (cl-transforms::make-3d-vector
+          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
+          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
+          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0)))))
+         (cl-transforms:make-3d-vector
+          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+          )
+         )
+        )
+  (format t "Sum of waypoint-distances: ~s~%" (apply '+ distances-waypoints)) 
+  (format t "Air-distance:              ~s~%" distance-air)
+  (format t "Difference: ~s" (- (apply '+ distances-waypoints) distance-air))
+  (sleep 2))
   )
 
-;; Wait until a navigation-action starts, then generate an expectation
+;; Wait until a navigation-action starts, then generate an expectation (TODO)
 (let ((last_navp nil) (subscriber nil))
   (defun start-navigation-watchdog ()
     ;; Check if navigation is running
