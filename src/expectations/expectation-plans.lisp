@@ -51,7 +51,7 @@
                   (( loc-desig 
                      (location `((pose 
                                  ,(tf:make-pose-stamped "/map" 0.0 
-                                   (tf:make-3d-vector -5.0 -5.0 0.0) 
+                                   (tf:make-3d-vector -1.0 -1.0 0.0) 
                                    (tf:euler->quaternion :az (/ pi 2.0))))))))
              (par
                (maybe-run-process-modules)
