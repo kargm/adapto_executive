@@ -6,7 +6,7 @@
 (defun calculate-time (data)
   (let ((distances-waypoints nil) (distance-air nil))
   (format t ".")
-  (format t "Found path of length ~s~%" (length (nav_msgs-msg:poses data)))
+  ;; (format t "Found path of length ~s~%" (length (nav_msgs-msg:poses data)))
 
   ;; calculate distance btw. poses of the global plan
   (setf distances-waypoints 
@@ -37,22 +37,22 @@
           )
          )
         )
-  (format t "Sum of waypoint-distances: ~s~%" (apply '+ distances-waypoints)) 
+  (format t "Sum of waypoint-distances: ~s~%" (apply '+ distances-waypoints))
   (format t "Air-distance:              ~s~%" distance-air)
-  (format t "Difference: ~s" (- (apply '+ distances-waypoints) distance-air))
-  (sleep 2))
-  )
+  (format t "Difference: ~s~% ---------------- ~%" (- (apply '+ distances-waypoints) distance-air))
+  (sleep 2)
+  ))
 
 ;; Wait until a navigation-action starts, then generate an expectation (TODO)
 (let ((last_navp nil) (subscriber nil))
   (defun start-navigation-watchdog ()
     ;; Check if navigation is running
     (unless (eq [cpm:pm-status :navigation] :WAITING)
-      (format t "-")
+      ;; (format t "-")
       ;; check if navigaton action has just started and subscribe to navigation plan
       (when (eq last_navp 0)
         (format t "STARTED NAVIGATION:")
-        (setf subscriber (roslisp:subscribe "/human_aware_plan" "nav_msgs/Path" #'calculate-time))
+        (setf subscriber (roslisp:subscribe "/human_aware_plan" "nav_msgs/Path" #'calculate-time :max-queue-length 1))
         ))
     ;; Check if navigation-action has ended and unsubscribe
     (unless (eq [cpm:pm-status :navigation] :RUNNING)
