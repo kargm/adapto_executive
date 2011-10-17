@@ -20,7 +20,7 @@
        ( (< average-normality 0.1) (format t "There MUST be something wrong! (avg. normality: ~s)~%" average-normality))
        ( (< average-normality 0.25) (format t "I think there IS something wrong... (avg. normality: ~s)~%" average-normality))
        ( (< average-normality 0.75) (format t "Hmmm there could be something wrong.. (avg. normality: ~s).~%" average-normality))
-       ( (< average-normality 0.9) (format t "Something is not as expected... (avg. normality: ~s)~%" average-normality)))
-     (sleep 2)
-     (start-expectation-validation))))
+       ( (< average-normality 0.9) (format t "Something is not as expected... (avg. normality: ~s)~%" average-normality))))
+   (sleep 2)
+   (start-expectation-validation)))
     

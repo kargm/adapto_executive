@@ -4,12 +4,12 @@
 ;; Length of the array returns strange values...
 ;; TODO: Iterate through array and calculate lengths between waypoints
 (defun calculate-time (data)
-  (let ((distances-waypoints nil) (distance-air nil))
-  (format t ".")
-  ;; (format t "Found path of length ~s~%" (length (nav_msgs-msg:poses data)))
+  (let ((distances-waypoints nil) (distance-air nil) (path-length nil))
+    (format t ".")
+    ;; (format t "Found path of length ~s~%" (length (nav_msgs-msg:poses data)))
 
-  ;; calculate distance btw. poses of the global plan
-  (setf distances-waypoints 
+    ;; calculate distance btw. poses of the global plan
+    (setf distances-waypoints 
           (loop for i from 1 to (- (length (nav_msgs-msg:poses data)) 1) collect
                (cl-transforms:v-dist
                 (cl-transforms::make-3d-vector
@@ -23,25 +23,36 @@
                  )
                 )))
 
-  ;; calculate distance between start- and endpose of the plan
-  (setf distance-air
-        (cl-transforms:v-dist
-         (cl-transforms::make-3d-vector
-          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
-          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
-          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0)))))
-         (cl-transforms:make-3d-vector
-          (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
-          (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
-          (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+    ;; calculate distance between start- and endpose of the plan
+    (setf distance-air
+          (cl-transforms:v-dist
+           (cl-transforms::make-3d-vector
+            (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
+            (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0))))
+            (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) 0)))))
+           (cl-transforms:make-3d-vector
+            (geometry_msgs-msg:x (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+            (geometry_msgs-msg:y (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+            (geometry_msgs-msg:z (geometry_msgs-msg:position (geometry_msgs-msg:pose (elt (nav_msgs-msg:poses data) (- (length (nav_msgs-msg:poses data)) 1)))))
+            )
+           )
           )
-         )
-        )
-  (format t "Sum of waypoint-distances: ~s~%" (apply '+ distances-waypoints))
-  (format t "Air-distance:              ~s~%" distance-air)
-  (format t "Difference: ~s~% ---------------- ~%" (- (apply '+ distances-waypoints) distance-air))
-  (sleep 2)
-  ))
+
+    (setf path-length (apply '+ distances-waypoints))
+    
+    ;; Generate an navigation-expectation of it not already exists
+    (unless (isgv :expectations 'time-to-goal)
+        (addgv :expectations 'time-to-goal (make-instance 'navigation-action-expectation
+                                         ;; TODO: HERE AVERAGE SPEED SHOULD BE SET!!!!! (at the moment just set 0.3)
+                                         :duration (/ path-length 0.3)
+                                         :start-time (roslisp:ros-time)
+                                         :path-length path-length
+                                         :avg-speed 0.3)))
+    ;; (format t "Sum of waypoint-distances: ~s~%" path-length)
+    ;; (format t "Linear-distance:              ~s~%" distance-air)
+    ;; (format t "Difference: ~s~% ---------------- ~%" (- (apply '+ distances-waypoints) distance-air))
+    (sleep 2)
+    ))
 
 ;; Wait until a navigation-action starts, then generate an expectation (TODO)
 (let ((last_navp nil) (subscriber nil))
@@ -58,6 +69,7 @@
     (unless (eq [cpm:pm-status :navigation] :RUNNING)
       (when (eq last_navp 1)
         (roslisp:unsubscribe subscriber)
+        (remgv :expectations 'time-to-goal)
         (format t "-:NAVIGATION ENDED")))
     ;; Save last status 
     (if (eq [cpm:pm-status :navigation] :RUNNING)

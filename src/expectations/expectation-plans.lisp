@@ -43,17 +43,38 @@
 ;; and  then generate an navigation expectation
 
 
-;; TEST: Navigate and try to measure how long it already takes
+;; Navigate to 3 points and monitor time of navigation-action
 (def-top-level-plan navigation-task()
   (start-statevar-update)
+  (create-global-structure :expectations)
+  ;; (generate-location-expectations)
+  
+  (with-designators 
+      (( loc1-desig 
+         (location `((pose 
+                      ,(tf:make-pose-stamped "/map" 0.0 
+                                             (tf:make-3d-vector 2.0 0.0 0.0) 
+                                             (tf:euler->quaternion :az (/ pi 2.0)))))))
+       ( loc2-desig 
+         (location `((pose 
+                      ,(tf:make-pose-stamped "/map" 0.0 
+                                             (tf:make-3d-vector 2.0 2.0 0.0) 
+                                             (tf:euler->quaternion :az (/ pi 2.0)))))))
 
-   (with-designators 
-                  (( loc-desig 
-                     (location `((pose 
-                                 ,(tf:make-pose-stamped "/map" 0.0 
-                                   (tf:make-3d-vector 2.0 0.0 0.0) 
-                                   (tf:euler->quaternion :az (/ pi 2.0))))))))
-             (par
-               (maybe-run-process-modules)
-               (start-navigation-watchdog)
-               (cram-process-modules:pm-execute :navigation loc-desig))))
+       ( loc3-desig 
+         (location `((pose 
+                      ,(tf:make-pose-stamped "/map" 0.0 
+                                             (tf:make-3d-vector 2.0 -4.0 0.0) 
+                                             (tf:euler->quaternion :az (/ pi 2.0))))))))
+    
+    (par
+      (maybe-run-process-modules)
+      (start-navigation-watchdog)
+      (seq 
+        (cram-process-modules:pm-execute :navigation loc1-desig)
+        (sleep 2)
+        (cram-process-modules:pm-execute :navigation loc2-desig)
+        (sleep 2)
+        (cram-process-modules:pm-execute :navigation loc3-desig))
+      (start-expectation-validation))
+      ))
