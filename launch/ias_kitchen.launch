@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find morse_2dnav)/launch/2dnav_ha_ias_kitchen.launch"/>
+  <include file="$(find jido_move_head)/launch/move_head.launch"/>
+  <include file="$(find morse_jido_manipulation_action)/launch/mjido_manip_actionserver.launch"/>
+</launch>
